@@ -28,34 +28,17 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Auto-increment version name and get version info
-        id: auto_increment_version
+      - name: Get commit count and set version info
+        id: get_version_info
         run: |
-          # Read current version name and code from build.gradle.kts
+          # Get the number of commits to use as the build number
+          BUILD_NUMBER=$(git rev-list --count HEAD)
+          
+          # Read the current version name from build.gradle.kts
           CURRENT_VERSION_NAME=$(grep "versionName" app/build.gradle.kts | cut -d'"' -f2)
-          VERSION_PARTS=$(echo $CURRENT_VERSION_NAME | sed -e 's/^["]//' -e 's/["]$//')
           
-          # Extract major.minor and date-build number parts
-          BASE_VERSION=$(echo $VERSION_PARTS | cut -d'.' -f1-2)
-          BUILD_PART=$(echo $VERSION_PARTS | cut -d'-' -f2)
-          
-          # Get today's date in YYMMDD format
-          TODAY_DATE=$(date +%y%m%d)
-          
-          # Get the current date part from the version name
-          CURRENT_DATE=$(echo $BUILD_PART | cut -d'-' -f1)
-          
-          # Initialize the new build number
-          NEW_BUILD_NUMBER=1
-          
-          # Check if the current date part is today's date
-          if [ "$CURRENT_DATE" == "$TODAY_DATE" ]; then
-            # If so, increment the existing build number
-            CURRENT_BUILD_NUMBER=$(echo $BUILD_PART | cut -d'-' -f2)
-            NEW_BUILD_NUMBER=$((CURRENT_BUILD_NUMBER + 1))
-          fi
-          
-          NEW_VERSION_NAME="$BASE_VERSION.$TODAY_DATE-$NEW_BUILD_NUMBER"
+          # Create the new version name by appending the build number
+          NEW_VERSION_NAME="${CURRENT_VERSION_NAME%.*}.$BUILD_NUMBER"
           
           # Replace old versionName with new one
           sed -i "s/versionName \"$CURRENT_VERSION_NAME\"/versionName \"$NEW_VERSION_NAME\"/" app/build.gradle.kts
