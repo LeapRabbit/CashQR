@@ -71,8 +71,8 @@ jobs:
           echo "VERSION_CODE=$NEW_VERSION_CODE" >> $GITHUB_ENV
           
           # Commit the change
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "udaya-vajapu"
+          git config --global user.email "udaya.vajapu@sixt.com"
           git add app/build.gradle.kts
           git commit -m "chore: Auto-increment versionName to $NEW_VERSION_NAME"
           git push
