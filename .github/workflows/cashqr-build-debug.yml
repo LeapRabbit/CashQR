@@ -35,30 +35,11 @@ jobs:
           BUILD_NUMBER=$(git rev-list --count HEAD)
           
           # Read the current version name from build.gradle.kts
-          CURRENT_VERSION_NAME=$(grep "versionName" app/build.gradle.kts | cut -d'"' -f2)
-          
-          # Create the new version name by appending the build number
-          NEW_VERSION_NAME="${CURRENT_VERSION_NAME%.*}.$BUILD_NUMBER"
-          
-          # Replace old versionName with new one
-          sed -i "s/versionName \"$CURRENT_VERSION_NAME\"/versionName \"$NEW_VERSION_NAME\"/" app/build.gradle.kts
-          
-          # Use a timestamp for versionCode for a guaranteed unique, monotonically increasing number
-          NEW_VERSION_CODE=$(date +%s)
-          
-          # Replace old versionCode with new one
-          sed -i "s/versionCode [0-9]*/versionCode $NEW_VERSION_CODE/" app/build.gradle.kts
+          VERSION_NAME=$(grep "versionName" app/build.gradle.kts | cut -d'"' -f2)
           
           # Set environment variables for next steps
-          echo "VERSION_NAME=$NEW_VERSION_NAME" >> $GITHUB_ENV
-          echo "VERSION_CODE=$NEW_VERSION_CODE" >> $GITHUB_ENV
-          
-          # Commit the change
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add app/build.gradle.kts
-          git commit -m "chore: Auto-increment versionName to $NEW_VERSION_NAME"
-          git push
+          echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
+          echo "BUILD_NUMBER=$BUILD_NUMBER" >> $GITHUB_ENV
 
       - name: Build debug APK
         run: ./gradlew assembleDebug
@@ -72,9 +53,9 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
-          files: temp_output/CashQR-v${{ env.VERSION_NAME }}+${{ env.VERSION_CODE }}-debug.apk
+          files: temp_output/CashQR-v${{ env.VERSION_NAME }}+${{ env.BUILD_NUMBER }}-debug.apk
           name: CashQR v${{ env.VERSION_NAME }} (Debug)
-          tag_name: v${{ env.VERSION_NAME }}
+          tag_name: v${{ env.VERSION_NAME }}+${{ env.BUILD_NUMBER }}
           draft: false
           prerelease: true
         env:
