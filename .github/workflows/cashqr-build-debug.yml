@@ -28,8 +28,8 @@ jobs:
       - name: Auto-increment version name and get version info
         id: auto_increment_version
         run: |
-          # Read current version name and code from build.gradle
-          CURRENT_VERSION_NAME=$(grep "versionName" app/build.gradle | cut -d'"' -f2)
+          # Read current version name and code from build.gradle.kts
+          CURRENT_VERSION_NAME=$(grep "versionName" app/build.gradle.kts | cut -d'"' -f2)
           VERSION_PARTS=$(echo $CURRENT_VERSION_NAME | sed -e 's/^["]//' -e 's/["]$//')
           
           # Extract major.minor and date-build number parts
@@ -55,13 +55,13 @@ jobs:
           NEW_VERSION_NAME="$BASE_VERSION.$TODAY_DATE-$NEW_BUILD_NUMBER"
           
           # Replace old versionName with new one
-          sed -i "s/versionName \"$CURRENT_VERSION_NAME\"/versionName \"$NEW_VERSION_NAME\"/" app/build.gradle
+          sed -i "s/versionName \"$CURRENT_VERSION_NAME\"/versionName \"$NEW_VERSION_NAME\"/" app/build.gradle.kts
           
           # Use a timestamp for versionCode for a guaranteed unique, monotonically increasing number
           NEW_VERSION_CODE=$(date +%s)
           
           # Replace old versionCode with new one
-          sed -i "s/versionCode [0-9]*/versionCode $NEW_VERSION_CODE/" app/build.gradle
+          sed -i "s/versionCode [0-9]*/versionCode $NEW_VERSION_CODE/" app/build.gradle.kts
           
           # Set environment variables for next steps
           echo "VERSION_NAME=$NEW_VERSION_NAME" >> $GITHUB_ENV
@@ -70,7 +70,7 @@ jobs:
           # Commit the change
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add app/build.gradle
+          git add app/build.gradle.kts
           git commit -m "chore: Auto-increment versionName to $NEW_VERSION_NAME"
           git push
 
