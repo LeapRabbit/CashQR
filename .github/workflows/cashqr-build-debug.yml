@@ -47,7 +47,7 @@ jobs:
       - name: Rename debug APK file
         run: |
           mkdir -p temp_output
-          mv app/build/outputs/apk/debug/app-debug.apk temp_output/CashQR-v${{ env.VERSION_NAME }}+${{ env.VERSION_CODE }}-debug.apk
+          mv app/build/outputs/apk/debug/app-debug.apk temp_output/CashQR-v${{ env.VERSION_NAME }}+${{ env.BUILD_NUMBER }}-debug.apk
 
       - name: Create GitHub Release
         id: create_release
