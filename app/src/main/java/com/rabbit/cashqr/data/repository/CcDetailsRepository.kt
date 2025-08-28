@@ -17,9 +17,6 @@ class CcDetailsRepository (context: Context) {
     // StateFlow to hold the list of CC, and a private mutable version
     private val ccList = data
 
-    /**
-     * Resets eligible CCs
-     */
     fun getCcList(): List<CreditCard> {
         return ccList
     }
