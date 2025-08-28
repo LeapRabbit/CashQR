@@ -24,8 +24,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -40,13 +38,13 @@ import com.rabbit.cashqr.data.model.CreditCard
 import com.rabbit.cashqr.data.repository.CcDetailsRepository
 import com.rabbit.cashqr.utils.UpiDetails
 
+const val upiLink = "upi://pay/"
 
 @Composable
 fun CcList(context: Context, qrData: String) {
     val ccList: List<CreditCard> = CcDetailsRepository(context).getCcList()
     val upiDetails = UpiDetails(qrData)
     val mcc = upiDetails.getUpiMcc()
-    val upiLink = "upi://pay/"
 
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp) // Add spacing between items
@@ -122,6 +120,37 @@ fun RewardCard(
                 }
             }
             SubmitButton(onClick, reward)
+        }
+    }
+}
+
+@Composable
+fun UpiCard(context: Context, qrData: String) {
+    val upiDetails = UpiDetails(qrData)
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = CardColor)
+    ) {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(upiLink.plus("?" + upiDetails.getQueryData())));
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+
+                Image(
+                    painter = painterResource(id = R.drawable.cc),
+                    contentDescription = "cc",
+                    modifier = Modifier
+                        .size(80.dp)
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+            }
+            SubmitButton({context.startActivity(intent)}, "Open UPI")
         }
     }
 }

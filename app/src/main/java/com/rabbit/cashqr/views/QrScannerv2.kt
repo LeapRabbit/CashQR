@@ -62,6 +62,7 @@ val PlaceholderImageColor = Color(0xFFD3D3D3)
 @Composable
 fun CardBasedScreen(viewModel: QrScannerViewModel) {
     val qrData by viewModel.upiDetails.collectAsState()
+    val upiDetails = UpiDetails(qrData)
     val context = LocalContext.current
     val activity = (context as? Activity)
     SetStatusBarColorNative(DarkBlue)
@@ -106,14 +107,19 @@ fun CardBasedScreen(viewModel: QrScannerViewModel) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            if(qrData.isNotEmpty()) {
-                // Section Headers
-                HeaderSection(title = "Suggested Payment Methods")
+            if (qrData.isNotEmpty()) {
+                if (upiDetails.getUpiMcc().isEmpty()) {
+                    UpiCard(context, qrData)
+                } else {
+                    // Section Headers
+                    HeaderSection(title = "Suggested Payment Methods")
 
-                Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                // Reward List Items
-                CcList(context, qrData)
+                    // Reward List Items
+                    CcList(context, qrData)
+                }
+
             }
         }
     }
