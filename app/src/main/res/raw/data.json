@@ -1,6 +1,9 @@
 [
   {
-    "name": "Kiwi",
+    "appName": "KIWI",
+    "ccName": "AU Kosmos",
+    "intentLink": "kiwi://upi/pay",
+    "reward": "1.5 %",
     "mccExcluded": [
       "0000",
       "0763",
@@ -89,7 +92,10 @@
     ]
   },
   {
-    "name": "Phonepe - SBI select",
+    "appName": "PHONEPE",
+    "ccName": "SBI Select Black",
+    "intentLink": "phonepe://pay",
+    "reward": "1 %",
     "mccExcluded": [
       "0000",
       "5172",

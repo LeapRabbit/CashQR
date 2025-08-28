@@ -10,7 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import com.rabbit.cashqr.viewmodels.QrScannerViewModel
-import com.rabbit.cashqr.views.QrScannerScreen
+import com.rabbit.cashqr.views.CardBasedScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -34,7 +34,7 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            QrScannerScreen(viewModel = viewModel)
+            CardBasedScreen(viewModel = viewModel)
         }
     }
 

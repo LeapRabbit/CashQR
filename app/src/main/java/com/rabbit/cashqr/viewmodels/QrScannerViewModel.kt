@@ -29,8 +29,8 @@ import java.util.concurrent.Executors
 class QrScannerViewModel : ViewModel() {
 
     // StateFlow to hold the scanned QR code data, and a private mutable version
-    private val _qrCodeData = MutableStateFlow(UpiDetails())
-    val upiDetails: StateFlow<UpiDetails> = _qrCodeData.asStateFlow()
+    private val _qrCodeData = MutableStateFlow("")
+    val upiDetails: StateFlow<String> = _qrCodeData.asStateFlow()
 
     // StateFlow to control if scanning is active
     private val _isScanning = MutableStateFlow(true)
@@ -98,7 +98,7 @@ class QrScannerViewModel : ViewModel() {
                                     val firstBarcode = barcodes.first()
                                     firstBarcode.rawValue?.let { rawValue ->
                                         // Update state with the scanned value and stop scanning
-                                        _qrCodeData.value = getUpiDetails(rawValue)
+                                        _qrCodeData.value = rawValue
                                         _isScanning.value = false
                                         // Unbind camera use cases
                                         cameraProvider?.unbindAll()
@@ -140,7 +140,7 @@ class QrScannerViewModel : ViewModel() {
      * Resets the scanner to allow a new QR code to be scanned.
      */
     fun resetScanner() {
-        _qrCodeData.value = UpiDetails()
+        _qrCodeData.value = ""
         _isScanning.value = true
         // The startScan function will be called again by the Composable when the state changes
     }
@@ -151,39 +151,4 @@ class QrScannerViewModel : ViewModel() {
         cameraExecutor.shutdown()
         cameraProvider?.unbindAll()
     }
-}
-
-fun String.truncate(maxLength: Int): String {
-    if (this.length <= maxLength) {
-        return this
-    }
-    return this.substring(0, maxLength) + "..."
-}
-
-private fun getUpiDetails(url: String) : UpiDetails {
-    val upiDetails = UpiDetails()
-
-    // Find the index of the question mark to get the query string
-    val queryIndex = url.indexOf('?')
-    if (queryIndex != -1 && queryIndex < url.length - 1) {
-        val query = url.substring(queryIndex + 1)
-        val pairs = query.split("&".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-
-        for (pair in pairs) {
-            val equalsIndex = pair.indexOf('=')
-            if (equalsIndex > 0) {
-                val key = pair.substring(0, equalsIndex)
-                val value = pair.substring(equalsIndex + 1)
-                // Use URLDecoder to handle any encoded characters like spaces (%20)
-                if (key == "pa")
-                    upiDetails.upiId = URLDecoder.decode(value, "UTF-8").truncate(25)
-                else if (key == "pn")
-                    upiDetails.name = URLDecoder.decode(value, "UTF-8")
-                else if (key == "mc")
-                    upiDetails.mcc = URLDecoder.decode(value, "UTF-8")
-            }
-        }
-    }
-
-    return upiDetails
 }
